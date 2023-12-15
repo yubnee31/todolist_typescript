@@ -1,67 +1,93 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
 import { RootState } from "../redux/config/ConfigStore";
+import { jsonApi } from "../axios/api";
 
 function Todolist({ isDone }: { isDone: boolean }) {
+  const [todo, setTodo] = useState([]);
   const dispatch = useDispatch();
-  const todos = useSelector((state: RootState) => state.todoSlice);
-  console.log(todos);
 
-  const onDeleteButtonHandler = (id: number) => {
+  const fetchTodo = async () => {
+    try {
+      const { data } = await jsonApi.get("/todos");
+      setTodo(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodo();
+  }, [todo]);
+
+  const onDeleteButtonHandler = async (id: number) => {
     Swal.fire({
       icon: "question",
       title: "삭제 하시겠습니까?",
       showCancelButton: true,
       confirmButtonText: "삭제",
       cancelButtonText: "취소",
-    }).then((res) => {
+    }).then(async (res) => {
       if (res.isConfirmed) {
-        dispatch(deleteTodo(id));
+        try {
+          await jsonApi.delete(`/todos/${id}`);
+        } catch (error) {
+          console.log(error);
+        }
       }
     });
   };
 
-  const onSwitchButtonHandler = (id: number) => {
-    dispatch(updateTodo(id));
+  const onSwitchButtonHandler = async (id: number) => {
+    try {
+      await jsonApi.patch(`/todos/${id}`, { isDone: !isDone });
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
       <StTitle>{isDone ? "Done..!🎉" : "Working..🔥"}</StTitle>
-      {todos
-        .filter((todo) => todo.isDone === isDone)
-        .map((todo) => {
-          return (
-            <StDiv key={todo.id}>
-              <StP>{todo.title}</StP>
-              <p>{todo.contents}</p>
-              <StBtnDiv>
-                <StBtn onClick={() => onDeleteButtonHandler(todo.id)}>
-                  삭제
-                </StBtn>
-                <StBtn onClick={() => onSwitchButtonHandler(todo.id)}>
-                  {isDone ? "취소" : "완료"}
-                </StBtn>
-              </StBtnDiv>
-            </StDiv>
-          );
-        })}
+      <StListDiv>
+        {todo
+          .filter((item: any) => item.isDone === isDone)
+          .map((item: any) => {
+            return (
+              <StDiv key={item.id}>
+                <StP>{item.title}</StP>
+                <p>{item.contents}</p>
+                <StBtnDiv>
+                  <StBtn onClick={() => onDeleteButtonHandler(item.id)}>
+                    삭제
+                  </StBtn>
+                  <StBtn onClick={() => onSwitchButtonHandler(item.id)}>
+                    {isDone ? "취소" : "완료"}
+                  </StBtn>
+                </StBtnDiv>
+              </StDiv>
+            );
+          })}
+      </StListDiv>
     </>
   );
 }
 
 export default Todolist;
 
-// const StTodoDiv = styled.div`
-//   margin: 0px auto;
-// `;
-
 const StTitle = styled.h2`
   font-size: 25px;
   font-weight: bold;
   margin: 0px 100px;
+`;
+
+const StListDiv = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 20px 100px;
 `;
 
 const StDiv = styled.div`
@@ -75,7 +101,6 @@ const StDiv = styled.div`
   height: 250px;
   background-color: lightgray;
   border-radius: 20px;
-  margin: 5px 100px;
 `;
 
 const StP = styled.p`

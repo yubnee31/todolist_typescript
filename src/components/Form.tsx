@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
-import { addTodo } from "../redux/modules/todoSlice";
+import { jsonApi } from "../axios/api";
 
 function Form() {
   const [title, setTitle] = useState<string>("");
   const [contents, setContents] = useState<string>("");
-  const dispatch = useDispatch();
+  const [todo, setTodo] = useState([]);
+
+  const fetchTodo = async () => {
+    try {
+      const { data } = await jsonApi.get("/todos");
+      setTodo(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodo();
+  }, []);
 
   const onChangeTitleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -17,7 +30,7 @@ function Form() {
     setContents(e.target.value);
   };
 
-  const onSubmitButtonHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitButtonHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title) {
       return Swal.fire("제목을 입력해주세요.");
@@ -30,9 +43,14 @@ function Form() {
       contents,
       isDone: false,
     };
-    dispatch(addTodo(newTodo));
-    setTitle("");
-    setContents("");
+    try {
+      await jsonApi.post("/todos", newTodo);
+      setTitle("");
+      setContents("");
+      fetchTodo();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div>

@@ -5,8 +5,8 @@ import type { TodosType } from "../../types/todosType";
 const initialState: TodosType[] = [
   {
     id: Date.now(),
-    title: "제목1",
-    contents: "내용1",
+    title: "",
+    contents: "",
     isDone: false,
   },
 ];

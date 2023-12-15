@@ -1,0 +1,16 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "title": "리액트",
+      "contents": "타입스크립트!",
+      "isDone": false
+    },
+    {
+      "id": 2,
+      "title": "휴식",
+      "contents": "잠 잘자기",
+      "isDone": false
+    }
+  ]
+}
