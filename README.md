@@ -8,5 +8,5 @@
 
 #### 설명
 
-- React + redux + toolkit을 이용한 Todolist
-- 전역상태관리, redux
+- json-server
+- Todo를 CRUD (From json-server)
