@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../redux/modules/todoSlice";
 
-import type { TodosProps } from "../types/todosType";
-
-function Form({ todos, setTodos }: Omit<TodosProps, "listIsDone">) {
+function Form() {
   const [title, setTitle] = useState<string>("");
   const [contents, setContents] = useState<string>("");
+  const dispatch = useDispatch();
 
   const onChangeTitleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -29,7 +30,7 @@ function Form({ todos, setTodos }: Omit<TodosProps, "listIsDone">) {
       contents,
       isDone: false,
     };
-    setTodos([...todos, newTodo]);
+    dispatch(addTodo(newTodo));
     setTitle("");
     setContents("");
   };

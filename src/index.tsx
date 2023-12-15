@@ -5,14 +5,18 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import GlobalStyle from "./GlobalStyles";
 import "./reset.css";
+import store from "./redux/config/ConfigStore";
+import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <>
-    <GlobalStyle />
-    <App />
+    <Provider store={store}>
+      <GlobalStyle />
+      <App />
+    </Provider>
   </>
 );
 

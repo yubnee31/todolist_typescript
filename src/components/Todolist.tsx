@@ -1,11 +1,16 @@
 import React from "react";
 import Swal from "sweetalert2";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTodo, updateTodo } from "../redux/modules/todoSlice";
+import { RootState } from "../redux/config/ConfigStore";
 
-import type { TodosProps } from "../types/todosType";
+function Todolist({ isDone }: { isDone: boolean }) {
+  const dispatch = useDispatch();
+  const todos = useSelector((state: RootState) => state.todoSlice);
+  console.log(todos);
 
-function Todolist({ todos, setTodos, listIsDone }: TodosProps) {
-  const deleteTodo = (id: number) => {
+  const onDeleteButtonHandler = (id: number) => {
     Swal.fire({
       icon: "question",
       title: "삭제 하시겠습니까?",
@@ -14,36 +19,30 @@ function Todolist({ todos, setTodos, listIsDone }: TodosProps) {
       cancelButtonText: "취소",
     }).then((res) => {
       if (res.isConfirmed) {
-        setTodos(todos.filter((item) => item.id !== id));
+        dispatch(deleteTodo(id));
       }
     });
   };
 
-  const switchTodo = (id: number) => {
-    setTodos(
-      todos.map((item) => {
-        if (item.id === id) {
-          return { ...item, isDone: !item.isDone };
-        } else {
-          return item;
-        }
-      })
-    );
+  const onSwitchButtonHandler = (id: number) => {
+    dispatch(updateTodo(id));
   };
   return (
     <>
-      <StTitle>{listIsDone ? "Done..!🎉" : "Working..🔥"}</StTitle>
+      <StTitle>{isDone ? "Done..!🎉" : "Working..🔥"}</StTitle>
       {todos
-        .filter((todo) => todo.isDone === listIsDone)
+        .filter((todo) => todo.isDone === isDone)
         .map((todo) => {
           return (
             <StDiv key={todo.id}>
               <StP>{todo.title}</StP>
               <p>{todo.contents}</p>
               <StBtnDiv>
-                <StBtn onClick={() => deleteTodo(todo.id)}>삭제</StBtn>
-                <StBtn onClick={() => switchTodo(todo.id)}>
-                  {listIsDone ? "취소" : "완료"}
+                <StBtn onClick={() => onDeleteButtonHandler(todo.id)}>
+                  삭제
+                </StBtn>
+                <StBtn onClick={() => onSwitchButtonHandler(todo.id)}>
+                  {isDone ? "취소" : "완료"}
                 </StBtn>
               </StBtnDiv>
             </StDiv>
