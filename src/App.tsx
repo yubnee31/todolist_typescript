@@ -1,24 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import Form from "./components/Form";
+import Todolist from "./components/Todolist";
+
+import type { TodosType } from "./types/todosType";
+import Header from "./components/Header";
 
 function App() {
+  const [todos, setTodos] = useState<TodosType[]>([
+    {
+      id: Date.now(),
+      title: "제목1",
+      contents: "내용1",
+      isDone: false,
+    },
+  ]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header />
+      <Form todos={todos} setTodos={setTodos} />
+      <Todolist todos={todos} setTodos={setTodos} listIsDone={false} />
+      <Todolist todos={todos} setTodos={setTodos} listIsDone={true} />
     </div>
   );
 }
